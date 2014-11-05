@@ -1,9 +1,11 @@
 name: basic_http_server
-author: Seth Ladd <sethladd@gmail.com>
 version: 0.0.1
-homepage: https://github.com/igrigorik/heroku-buildpack-dart
+author: Seth Ladd <sethladd@gmail.com>
 description: A minimal static HTTP server to demonstrate Dart on Heroku.
+homepage: https://github.com/igrigorik/heroku-buildpack-dart
 dependencies:
   browser: any
+  postgresql: any
   shelf: any
   shelf_static: any
+  sqljocky: any
