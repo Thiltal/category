@@ -1,13 +1,13 @@
  
 import 'dart:io';
-import 'dart:json' as JSON;
+import 'dart:convert';
 
 main() {
   var port = int.parse(Platform.environment['PORT']);
   HttpServer.bind('0.0.0.0', port).then((HttpServer server) {
     print('Server started on port: ${port}');
     server.listen((HttpRequest request) {
-      var resp = JSON.stringify({
+      var resp = JSON.encode({
         'Dart on Heroku': true,
         'Buildpack URL': 'https://github.com/igrigorik/heroku-buildpack-dart',
         'Environment': Platform.environment}
