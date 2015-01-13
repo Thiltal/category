@@ -3,6 +3,7 @@ library server;
 import 'dart:io';
 import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as io;
+import 'package:path/path.dart' show join, dirname;
 import 'package:shelf_static/shelf_static.dart';
 import 'package:shelf_route/shelf_route.dart';
 import 'package:shelf_simple_session/shelf_simple_session.dart';
@@ -22,7 +23,10 @@ void main() {
   var portEnv = Platform.environment['PORT'];
   var port = portEnv == null ? 9999 : int.parse(portEnv);
 
-  var staticHandler = createStaticHandler("../web/", defaultDocument: 'index.html');
+  var pathToBuild = join(dirname(Platform.script.toFilePath()),
+  '..', 'web');
+  
+  var staticHandler = createStaticHandler(pathToBuild, defaultDocument: 'index.html');
 
 
   var myRouter = router()..get("/db", (shelf.Request request) {
