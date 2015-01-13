@@ -1,5 +1,5 @@
 import 'dart:html';
 
 main() {
-  querySelector('#text').text = 'Hello from Dart!';
+  querySelector('#text').text = 'Hello from sacdasDart!';
 }

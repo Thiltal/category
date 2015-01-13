@@ -7,5 +7,7 @@ dependencies:
   browser: any
   postgresql: any
   shelf: any
+  shelf_auth: any
+  shelf_route: any
+  shelf_simple_session: any
   shelf_static: any
-  sqljocky: any
