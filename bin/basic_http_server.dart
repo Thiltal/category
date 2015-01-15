@@ -30,6 +30,7 @@ void main() {
   var portEnv = Platform.environment['PORT'];
   var port = portEnv == null ? 9999 : int.parse(portEnv);
 
+  Process.run(join(dirname(Platform.script.toFilePath()), '..', 'buildscript.dart'), []);
   var pathToBuild = join(dirname(Platform.script.toFilePath()), '..', 'web');
 
   pool = new Pool(uri, minConnections: 1, maxConnections: 10, 
