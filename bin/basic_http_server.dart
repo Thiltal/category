@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as io;
 import 'package:path/path.dart' show join, dirname;
-import 'package:shelf_static/shelf_static.dart';
+import '../shelf_static/shelf_static.dart';
 import 'package:shelf_route/shelf_route.dart';
 import 'package:shelf_simple_session/shelf_simple_session.dart';
 import 'dart:async';
@@ -30,7 +30,6 @@ void main() {
   var portEnv = Platform.environment['PORT'];
   var port = portEnv == null ? 9999 : int.parse(portEnv);
 
-  Process.run(join(dirname(Platform.script.toFilePath()), '..', 'buildscript.dart'), []);
   var pathToBuild = join(dirname(Platform.script.toFilePath()), '..', 'web');
 
   pool = new Pool(uri, minConnections: 1, maxConnections: 10, 
