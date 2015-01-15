@@ -98,8 +98,10 @@ packages:
     source: hosted
     version: "0.1.2"
   shelf_static:
-    description: shelf_static
-    source: hosted
+    description:
+      path: "..\\..\\shelf_static\\shelf_static.dart"
+      relative: true
+    source: path
     version: "0.2.1"
   source_span:
     description: source_span
