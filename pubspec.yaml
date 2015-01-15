@@ -10,5 +10,4 @@ dependencies:
   shelf_auth: any
   shelf_route: any
   shelf_simple_session: any
-  shelf_static:
-    path: ../../shelf_static/shelf_static.dart
+  shelf_static: any
