@@ -10,7 +10,7 @@ import 'package:shelf_simple_session/shelf_simple_session.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:postgresql/postgresql.dart';
-import 'package:postgresql/pool.dart';
+//import 'package:postgresql/pool.dart';
 
 part 'problem.dart';
 part 'user.dart';
