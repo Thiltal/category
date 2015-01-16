@@ -18,7 +18,7 @@ part 'solution.dart';
 
 List<Problem> problems = [];
 List<User> users = [];
-Pool pool;
+//Pool pool;
 Router myRouter;
 int nextUserId = 1;
 
@@ -32,24 +32,37 @@ void main() {
 
   var pathToBuild = join(dirname(Platform.script.toFilePath()), '..', 'web');
 
-  pool = new Pool(uri, minConnections: 1, maxConnections: 10, 
-      idleTimeout: const Duration(seconds:100), 
-      maxLifetime: const Duration(seconds:300),
-      leakDetectionThreshold:const Duration(seconds:300));
-  pool.messages.listen(print);
-  pool.start().then((_) {
-    pool.connect().then((conn) {
-      conn.query("""
+//  pool = new Pool(uri, minConnections: 1, maxConnections: 10,
+//      idleTimeout: const Duration(seconds:100),
+//      maxLifetime: const Duration(seconds:300),
+//      leakDetectionThreshold:const Duration(seconds:300));
+//  pool.messages.listen(print);
+//  pool.start().then((_) {
+//    pool.connect().then((conn) {
+//      conn.query("""
+//              select max(id) from "User"
+//          """).toList().then((List<Row> rows) {
+//        nextUserId = rows.first.toList().first.toInt() + 1;
+//      }).then((event) {
+//
+//        return conn.close();
+//      }) // Return connection to pool
+//      .catchError((err) => print('Query error: $err'));
+//      conn.close();
+//    });
+//  });
+
+  connect(uri).then((conn) {
+    conn.query("""
               select max(id) from "User"
           """).toList().then((List<Row> rows) {
-        nextUserId = rows.first.toList().first.toInt() + 1;
-      }).then((event) {
+      nextUserId = rows.first.toList().first.toInt() + 1;
+    }).then((event) {
 
-        return conn.close();
-      }) // Return connection to pool
-      .catchError((err) => print('Query error: $err'));
-      conn.close();
-    });
+      return conn.close();
+    }) // Return connection to pool
+    .catchError((err) => print('Query error: $err'));
+    conn.close();
   });
 
   var staticHandler = createStaticHandler(pathToBuild, defaultDocument: 'index.html');
@@ -73,6 +86,8 @@ void main() {
       newUser.fromJson(JSON.decode(data));
       newUser.save();
       users.add(newUser);
+      Map mySession = session(request);
+      mySession.putIfAbsent("logged", () => newUser.id);
       controller.add(const Utf8Codec().encode(JSON.encode(newUser.toJson())));
       controller.close();
     });
@@ -144,66 +159,62 @@ void solveProblem(StreamController controller, shelf.Request request) {
   request.readAsString().then((String data) {
     Map solutionData = JSON.decode(data);
     var map = session(request);
-    Function error = () {
-      controller.add(const Utf8Codec().encode(JSON.encode({
-        "problems": JSON.encode({
-          "error": "user is not logged in"
-        })
-      })));
-      controller.close();
-    };
     if (map.containsKey('logged')) {
       User actual = getUserById(map["logged"]);
-      if(actual!=null){
+      if (actual != null) {
         Solution solution = new Solution(actual, getProblemById(solutionData["mapId"]));
         solution.fromData(solutionData);
         solution.save();
-        pool.connect().then((conn) {
-           conn.query("select * from \"Solution\" where id_user=@userId",{ 
-            "userId": solution.user.id     
-           }).toList().then((List<Row> rows) {
-             List out = [];
-             List<Map> solutions = [];
-             for (Row row in rows) {
-               solutions.add(row.toMap());
-             }
-             controller.add(const Utf8Codec().encode(JSON.encode({
-               "solutions": solutions
-             })));
-             controller.close();
-           });
-           conn.close();
-         });
-      }else{
-        error();
+        connect(uri).then((conn) {
+          try {
+            conn.query("select * from \"Solution\"").toList().then((List<Row> rows) {
+              List out = [];
+              List<Map> solutions = [];
+              for (Row row in rows) {
+                solutions.add(row.toMap());
+              }
+              controller.add(const Utf8Codec().encode(JSON.encode({
+                "solutions": solutions
+              })));
+              controller.close();
+              conn.close();
+            });
+          } catch (e) {
+            closeAndPrintError("error in solution query", conn, controller);
+          }
+        });
+      } else {
+        closeAndPrintError("user not logged in", null, controller);
       }
     } else {
-        error();
+      closeAndPrintError("user not logged in", null, controller);
     }
 
   });
-
-
 }
 
 void getProblems(StreamController controller, shelf.Request request) {
-  pool.connect().then((conn) {
-    conn.query("select * from \"Problem\"").toList().then((List<Row> rows) {
-      List out = [];
-      problems = [];
-      for (Row row in rows) {
-        problems.add(new Problem()..fromJson(row.toMap()));
-      }
+  connect(uri).then((conn) {
+    try {
+      conn.query("select * from \"Problem\"").toList().then((List<Row> rows) {
+        List out = [];
+        problems = [];
+        for (Row row in rows) {
+          problems.add(new Problem()..fromJson(row.toMap()));
+        }
 
-      for (Problem p in problems) {
-        out.add(p.toSimpleJson());
-      }
-      controller.add(const Utf8Codec().encode(JSON.encode({
-        "problems": JSON.encode(out)
-      })));
-      controller.close();
-    });
-    conn.close();
+        for (Problem p in problems) {
+          out.add(p.toSimpleJson());
+        }
+        controller.add(const Utf8Codec().encode(JSON.encode({
+          "problems": JSON.encode(out)
+        })));
+        controller.close();
+        conn.close();
+      });
+    } catch (e) {
+      closeAndPrintError("error in problem query", conn, controller);
+    }
   });
 }
 
@@ -231,39 +242,43 @@ void writeDbRow(StreamController controller, shelf.Request request) {
 void login(StreamController controller, shelf.Request request) {
   request.readAsString().then((String data) {
     Map user = JSON.decode(data);
-    pool.connect().then((conn) {
-      conn.query("select * from \"User\" where nick = @nick and password=@password", {
-        "nick": user["nick"],
-        "password": user["password"]
-      }).toList().then((List<Row> rows) {
-        if (rows.length > 0) {
-          Map userData = rows.first.toMap();
-          int id = userData["id"];
-          User user = getUserById(id);
-          if (user == null) {
-            user = new User(id);
-            user.fromJson(userData);
-            users.add(user);
+    connect(uri).then((conn) {
+      try {
+        conn.query("select * from \"User\" where nick = @nick and password=@password", {
+          "nick": user["nick"],
+          "password": user["password"]
+        }).toList().then((List<Row> rows) {
+          if (rows.length > 0) {
+            Map userData = rows.first.toMap();
+            int id = userData["id"];
+            User user = getUserById(id);
+            if (user == null) {
+              user = new User(id);
+              user.fromJson(userData);
+              users.add(user);
+            }
+            print("logged ${user.id} ${user.nick}");
+            Map mySession = session(request);
+            mySession.putIfAbsent("logged", () => user.id);
+            var map = session(request);
+            bool logged = map.containsKey('logged');
+
+            controller.add(const Utf8Codec().encode(JSON.encode({
+
+              "user": user.toJson(),
+              "logged": logged
+            })));
+          } else {
+            controller.add(const Utf8Codec().encode(JSON.encode({
+              "userNotFound": true
+            })));
           }
-          print("logged ${user.id} ${user.nick}");
-          Map mySession = session(request);
-          mySession.putIfAbsent("logged", () => user.id);
-          var map = session(request);
-          bool logged = map.containsKey('logged');
-
-          controller.add(const Utf8Codec().encode(JSON.encode({
-
-            "user": user.toJson(),
-            "logged": logged
-          })));
-        } else {
-          controller.add(const Utf8Codec().encode(JSON.encode({
-            "userNotFound": true
-          })));
-        }
-        controller.close();
-      });
-    conn.close();
+          controller.close();
+          conn.close();
+        });
+      } catch (e) {
+        closeAndPrintError("error in login query", conn, controller);
+      }
     });
   });
 }
@@ -299,22 +314,36 @@ Problem getProblemById(int id) {
 void getProblem(StreamController controller, shelf.Request request) {
   request.readAsString().then((String data) {
     Map mapData = JSON.decode(data);
-    pool.connect().then((conn) {
-      conn.query("select * from \"Problem\"").toList().then((List<Row> rows) {
+    connect(uri).then((conn) {
+      try {
+        conn.query("select * from \"Problem\"").toList().then((List<Row> rows) {
 
-        problems = [];
-        for (Row row in rows) {
-          problems.add(new Problem()..fromJson(row.toMap()));
-        }
+          problems = [];
+          for (Row row in rows) {
+            problems.add(new Problem()..fromJson(row.toMap()));
+          }
 
-        Problem theChosenOne = getProblemById(mapData["mapId"]);
+          Problem theChosenOne = getProblemById(mapData["mapId"]);
 
-        controller.add(const Utf8Codec().encode(JSON.encode({
-          "problem": theChosenOne
-        })));
-        controller.close();
-      });
-    conn.close();
+          controller.add(const Utf8Codec().encode(JSON.encode({
+            "problem": theChosenOne
+          })));
+          controller.close();
+          conn.close();
+        });
+      } catch (e) {
+        closeAndPrintError("Error in problem query", conn, controller);
+      }
     });
   });
+}
+
+void closeAndPrintError(String error, Connection conn, StreamController controller) {
+  controller.add(const Utf8Codec().encode(JSON.encode({
+    "error": error
+  })));
+  controller.close();
+  if (conn != null) {
+    conn.close();
+  }
 }

@@ -15,7 +15,8 @@ class User {
   Stream<int> save() {
     StreamController controller = new StreamController();
     Stream<int> out = controller.stream;
-    pool.connect().then((conn) {
+    connect(uri).then((conn) {
+      try{
       conn.execute("""
           INSERT INTO "User"(
             id, age, nick, password, email, gender, education, work)
@@ -25,6 +26,11 @@ class User {
         controller.close();
       });
       conn.close();
+      }catch(e){
+        controller.add(404);
+        controller.close();
+        conn.close();
+      }
     });
     
     return out;

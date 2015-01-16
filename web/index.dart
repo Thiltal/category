@@ -109,6 +109,7 @@ class NewUserForm {
           ..open('POST', "/save_user")
           ..onLoad.listen((ProgressEvent event) {
             print(xhr.responseText);
+            categoryApp.jumpToProblemList();
           })
           ..setRequestHeader("X-Requested-With", "XMLHttpRequest")
           ..setRequestHeader("Content-Type", "text/json; charset=UTF-8")
