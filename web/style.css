@@ -50,3 +50,39 @@ body{
     padding: 2px;
     cursor:pointer;
 }
+
+.loadingInProgress{
+  background-color: green;
+}
+
+
+#feedback{
+    width:100%;
+    height: 100%;
+    background-color: white;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 1000;
+}
+#feedback div{
+    width: 400px;
+    height: 300px;
+    font-size: 20px;
+    text-align: center;
+
+    position: absolute;
+    top:0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    margin: auto;
+    border: 1px solid black;
+}
+#feedback h1{
+  font-size: 36px;
+}
+#feedback .conformity_level{
+  font-size: 32px;
+}

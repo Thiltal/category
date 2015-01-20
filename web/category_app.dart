@@ -24,8 +24,8 @@ class CategoryApp {
     map = querySelector("#map");
     feedback = querySelector("#feedback");
     problemListElement = querySelector("#problemList");
-    
-    
+
+
     Function resizeLoadingScreen = (_) {
       loadingScreen.style
           ..width = "${window.innerWidth}px"
@@ -55,24 +55,25 @@ class CategoryApp {
     });
   }
 
-  void jumpToProblemList(){
+  void jumpToProblemList() {
     hideAll();
     problemListElement.style.display = "block";
     problemList = new ProblemList(problemListElement);
   }
-  
+
   void jumpToLogin() {
-      hideAll();
-      welcome.style.display = "block";
+    hideAll();
+    loginForm.clear();
+    welcome.style.display = "block";
   }
-  
-  void jumpToMap(int mapId){
+
+  void jumpToMap(int mapId) {
     hideAll();
     map.style.display = "block";
     sm = new SolveMap(mapId);
   }
-  
-  void jumpToFeedback(Map statistics){
+
+  void jumpToFeedback(Map statistics) {
     hideAll();
     feedback.style.display = "block";
     feedbackClass = new Feedback(feedback, statistics);

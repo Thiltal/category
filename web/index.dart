@@ -47,6 +47,8 @@ class LoginForm {
     password = cont.querySelector("#login_password");
     send = cont.querySelector("#send_login");
     Function doLogin =(_) {
+      send.innerHtml = "Login in progres...";
+      send.classes.add("loadingInProgress");
       HttpRequest xhr = new HttpRequest();
       xhr
           ..open('POST', "/login")
@@ -81,6 +83,11 @@ class LoginForm {
     out["password"] = password.value;
     return out;
   }
+  
+  void clear(){
+    send.innerHtml = "Login";
+    send.classes.remove("loadingInProgress");
+  }
 }
 
 
@@ -108,7 +115,6 @@ class NewUserForm {
       xhr
           ..open('POST', "/save_user")
           ..onLoad.listen((ProgressEvent event) {
-            print(xhr.responseText);
             categoryApp.jumpToProblemList();
           })
           ..setRequestHeader("X-Requested-With", "XMLHttpRequest")

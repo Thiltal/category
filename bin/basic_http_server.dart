@@ -147,12 +147,31 @@ void main() {
     return new shelf.Response.ok(out, headers: headers);
   }, middleware: middle);
 
+  myRouter.post("/logout", (shelf.Request request) {
+    StreamController controller = new StreamController();
+    Stream<List<int>> out = controller.stream;
+    logout(controller, request);
+    var headers = <String, String>{
+      HttpHeaders.CONTENT_TYPE: "text/json"
+    };
+    return new shelf.Response.ok(out, headers: headers);
+  }, middleware: middle);
+
 
   shelf.Handler handler = new shelf.Cascade().add(staticHandler).add(myRouter.handler).handler;
   io.serve(handler, InternetAddress.ANY_IP_V4, port).then((server) {
     print('Serving at http://${server.address.host}:${server.port}');
   });
 
+}
+
+void logout(StreamController controller, shelf.Request request) {
+  Map mySession = session(request);
+  mySession.remove("logged");
+  controller.add(const Utf8Codec().encode(JSON.encode({
+                  "logout": true
+                })));
+  controller.close();
 }
 
 void solveProblem(StreamController controller, shelf.Request request) {
@@ -164,15 +183,15 @@ void solveProblem(StreamController controller, shelf.Request request) {
       if (actual != null) {
         Solution solution = new Solution(actual, getProblemById(solutionData["mapId"]));
         solution.fromData(solutionData);
-        solution.save();
         connect(uri).then((conn) {
           try {
-            conn.query("select * from \"Solution\"").toList().then((List<Row> rows) {
+            conn.query("select * from \"Solution\" where id_problem=@problemId",{"problemId":solutionData["mapId"]}).toList().then((List<Row> rows) {
               List out = [];
               List<Map> solutions = [];
               for (Row row in rows) {
-                solutions.add(row.toMap());
+                solutions.add((new Solution(null, null)..fromJson(row.toMap())).toJson());
               }
+              solutions.add(solution.toJson());
               controller.add(const Utf8Codec().encode(JSON.encode({
                 "solutions": solutions
               })));
@@ -183,6 +202,9 @@ void solveProblem(StreamController controller, shelf.Request request) {
             closeAndPrintError("error in solution query", conn, controller);
           }
         });
+        new Future.delayed(const Duration(milliseconds:300)).then((_){
+          solution.save();
+          });
       } else {
         closeAndPrintError("user not logged in", null, controller);
       }
