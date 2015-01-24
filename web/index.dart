@@ -23,6 +23,7 @@ main() {
   xhr
       ..open('POST', "/app_state")
       ..onLoad.listen((ProgressEvent event) {
+    
         Map state = JSON.decode(xhr.responseText);
         if(state.containsKey("logged")&& state["logged"]){
           categoryApp.jumpToProblemList();

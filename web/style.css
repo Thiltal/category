@@ -86,3 +86,7 @@ body{
 #feedback .conformity_level{
   font-size: 32px;
 }
+
+#logout{
+  background-color:red;
+}
