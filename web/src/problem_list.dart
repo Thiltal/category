@@ -5,10 +5,11 @@ class ProblemList {
   Element cont;
 
   ProblemList(this.cont) {
-    Element logoutBUtton = querySelector("#logout");
-    if(logoutBUtton!=null){
-      logoutBUtton.innerHtml = "Logout";
+    Element logoutButton = querySelector("#logout");
+    if(logoutButton!=null){
+      logoutButton.innerHtml = "Logout";
     }
+
     HttpRequest xhr = new HttpRequest();
     xhr
         ..open('POST', "/get_problems")
@@ -33,7 +34,31 @@ class ProblemList {
 """;
     }
     out += "<button id='logout'>Logout</logout>";
+    out += "<button id='createIssueButton'>Create</logout>";
     cont.innerHtml = out;
+
+
+    Element createButton = querySelector("#createIssueButton");
+    if(createButton !=null){
+        createButton.onClick.listen((e){
+          Element overlay = querySelector("#createOverlay");
+          overlay.style.display="inherit";
+          render();
+          overlay.querySelector("button").onClick.listen((e){
+            overlay.style.display = "none";
+            HttpRequest xhr = new HttpRequest();
+            xhr
+              ..open('POST', "/createIssue")
+              ..onLoad.listen((ProgressEvent event) {
+              categoryApp.jumpToLogin();
+            })
+              ..setRequestHeader("X-Requested-With", "XMLHttpRequest")
+              ..setRequestHeader("Content-Type", "text/json; charset=UTF-8")
+              ..send('{"issue": ${(querySelector("#createOverlay textarea") as TextAreaElement).value}');
+          });
+        });
+    }
+
     ElementList problemList = cont.querySelectorAll(".problemRow");
 
     for (Element e in problemList) {

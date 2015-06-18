@@ -12,9 +12,9 @@ import 'dart:convert';
 import 'package:postgresql/postgresql.dart';
 //import 'package:postgresql/pool.dart';
 
-part 'problem.dart';
-part 'user.dart';
-part 'solution.dart';
+part 'src/problem.dart';
+part 'src/user.dart';
+part 'src/solution.dart';
 
 List<Problem> problems = [];
 List<User> users = [];
@@ -23,7 +23,8 @@ Router myRouter;
 int nextUserId = 1;
 
 String uri =
-    'postgres://xifqxsdvnegrgu:yqMF8WD0rEnkr_UXWDF_9zVt3K@ec2-54-83-43-49.compute-1.amazonaws.com:5432/dbo2tavcvt2rtl?sslmode=require';
+//    'postgres://category.thilisar.cz:categorization@sql3.pipni.cz:5432/category.thilisar.cz';
+'postgres://xifqxsdvnegrgu:yqMF8WD0rEnkr_UXWDF_9zVt3K@ec2-54-83-43-49.compute-1.amazonaws.com:5432/dbo2tavcvt2rtl?sslmode=require';
 
 void main() {
 
@@ -64,6 +65,21 @@ void main() {
     .catchError((err) => print('Query error: $err'));
     conn.close();
   });
+  
+  connect(uri).then((conn) {
+    conn.query("""
+              INSERT INTO "User"(
+            id, age, nick, password, email, gender, education, work)
+          VALUES (6, 25, 'aaa', 'aaa',  'aaa',  'aaa',  'aaa',  'aaa') RETURNING id;
+          """).toList().then((List<Row> rows) {
+      nextUserId = rows.first.toList().first.toInt() + 1;
+    }).then((event) {
+
+      return conn.close();
+    }) // Return connection to pool
+    .catchError((err) => print('Query error: $err'));
+    conn.close();
+  });
 
   var staticHandler = createStaticHandler(pathToBuild, defaultDocument: 'index.html');
 
@@ -84,7 +100,7 @@ void main() {
     request.readAsString().then((String data) {
       User newUser = new User(nextUserId++);
       newUser.fromJson(JSON.decode(data));
-      newUser.save();
+      newUser.save().listen((code){print("save user $code");});
       users.add(newUser);
       Map mySession = session(request);
       mySession.putIfAbsent("logged", () => newUser.id);

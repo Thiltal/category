@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Categorization app</title>
+        <link rel="stylesheet" type="text/css" href="style.css">
+    </head>
+
+    <body>
+        <div id="loadingScreen">
+            <div>Categorization application loading</div>
+        </div>
+
+        <div id="createOverlay">
+            <textarea rows="15" cols="60"></textarea>
+            <button id="sendCreated">Send</button>
+        </div>
+
+
+        <div id="problemList">
+            Please wait, list of sets is loading ...
+        </div>
+
+        <div id="welcome">
+            <button id="login_button">Login</button>
+            <button id="new_account">New account</button>
+
+            <div id="login">
+                <label for="nick">Nick:</label><input type="text" name="nick" id="login_nick"><br>
+                <label for="nick">Password:</label><input type="password" name="nick" id="login_password"><br>
+                <button id="send_login">Login</button>
+            </div>
+
+            <div id="new_user">
+                <h1>New User</h1>
+
+                <p>We need only nick and password. Filling of the other fields will help us with our research.</p>
+
+                <label for="nick">Nick*:</label><input type="text" name="nick" id="new_user_nick"><br>
+                <label for="nick">Password*:</label><input type="password" name="nick" id="new_user_password"><br>
+                <label for="nick">Age:</label><input type="text" name="nick" id="new_user_age"><br>
+                <label for="nick">Email:</label><input type="text" name="nick" id="new_user_email"><br>
+                <label for="nick">Gender:</label>
+                <select id="new_user_gender">
+                    <option value="Woman">Woman</option>
+                    <option value="Man">Man</option>
+                </select>
+
+                <br>
+                <label for="nick">Education:</label>
+                <select id="new_user_education">
+                    <option value="primary_school">Primary school</option>
+                    <option value="secondary_school">Secondary school</option>
+                    <option value="college">College</option>
+                </select>
+                <br>
+                <label for="nick">Work:</label>
+                <select id="new_user_work">
+                    <option value="nothing">I don'd have work</option>
+                    <option value="it">It</option>
+                    <option value="technical">Technical</option>
+                    <option value="medicine">Medicine</option>
+                    <option value="education">Education</option>
+                    <option value="commerce">Commerce</option>
+                    <option value="artistic">Artistic</option>
+                    <option value="other">Other</option>
+                </select>
+                <br>
+                <button id="register_new_user">Register</button>
+            </div>
+
+        </div>
+
+        <div id="map">
+            <button id="sendMapSolution">Send solution</button>
+            <canvas id="mapCanvas"></canvas>
+        </div>
+        <div id="feedback">
+            <div>Feedback</div>
+        </div>
+        <script type="application/dart" src="index.dart"></script>
+        <script src="dart.js"></script>
+    </body>
+</html>

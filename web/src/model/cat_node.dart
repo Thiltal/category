@@ -80,14 +80,14 @@ class CatNode {
   }
 
   void addAsChild(CatNode target){
-    parentNode = target;
     sm.removeFromChildrens(this);
+    parentNode = target;
     target.children.add(this);
   }
   
   void addAsParent(CatNode target){
-    target.parentNode = this;
     sm.removeFromChildrens(target);
+    target.parentNode = this;
     children.add(target);
   }
   

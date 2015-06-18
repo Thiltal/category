@@ -11,3 +11,5 @@ dependencies:
   shelf_route: any
   shelf_simple_session: any
   shelf_static: any
+  googleapis: any
+  googleapis_auth: any

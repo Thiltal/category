@@ -24,29 +24,29 @@ class Solution {
     }
   }
 
-  Stream<int> save() {
-    StreamController controller = new StreamController();
-    Stream<int> out = controller.stream;
-    connect(uri).then((conn) {
-      Map out = toJson();
-      try {
-        conn.execute("INSERT INTO \"Solution\"(id_user, id_problem, solution, start_time, end_time) VALUES (@user_id, @problem_id, @solution, @start_time, @end_time)",
-            out).then((int code) {
-          controller.add(code);
-          controller.close();
-        }).then((int code){
-          print("probelm saved with code $code");
-          conn.close();
-        });
-      } catch (e) {
-        conn.close();
-        controller.add(404);
-        controller.close();
-      }
-    });
-
-    return out;
-  }
+//  Stream<int> save() {
+//    StreamController controller = new StreamController();
+//    Stream<int> out = controller.stream;
+//    connect(uri).then((conn) {
+//      Map out = toJson();
+//      try {
+//        conn.execute("INSERT INTO \"Solution\"(id_user, id_problem, solution, start_time, end_time) VALUES (@user_id, @problem_id, @solution, @start_time, @end_time)",
+//            out).then((int code) {
+//          controller.add(code);
+//          controller.close();
+//        }).then((int code){
+//          print("probelm saved with code $code");
+//          conn.close();
+//        });
+//      } catch (e) {
+//        conn.close();
+//        controller.add(404);
+//        controller.close();
+//      }
+//    });
+//
+//    return out;
+//  }
 
   Map toJson() {
     Map out = {};
