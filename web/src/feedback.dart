@@ -18,8 +18,8 @@ class Feedback {
 
 
   double conformityLevel(Solution your) {
-    int total = 0;
-    int match = 0;
+//    int total = 0;
+//    int match = 0;
     List<double> conformities = [];
     int joins = your.solution.length;
     for (Solution s in solutions) {
@@ -55,13 +55,13 @@ class Feedback {
 
   void render() {
     int maxTime = 0;
-    int sumTime = 0;
+//    int sumTime = 0;
 
     for (Solution s in solutions) {
       if (s.time > maxTime) {
         maxTime = s.time;
       }
-      sumTime += s.time;
+//      sumTime += s.time;
     }
     double conformity = conformityLevel(solutions.last);
     String out = """

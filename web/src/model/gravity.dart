@@ -26,7 +26,7 @@ class Gravity {
     num centerX = window.innerWidth / 2;
     num centerY = window.innerHeight / 2;
 
-    num outSum = 0;
+//    num outSum = 0;
 
     List<NodeGravityContainer> nodes = [];
     for (var n in sm.nodes) {

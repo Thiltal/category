@@ -13,3 +13,6 @@ dependencies:
   shelf_static: any
   googleapis: any
   googleapis_auth: any
+  crypto: any
+  mustache_no_mirror: "^0.1.8"
+  dbcrypt: any

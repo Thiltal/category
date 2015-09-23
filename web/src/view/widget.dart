@@ -1,7 +1,7 @@
-part of ui;
+part of categoryApp;
 
 abstract class Widget{
-  Template template;
+  mustache.Template template;
   Element target;
   String path;
   Widget parentWidget;
@@ -15,14 +15,14 @@ abstract class Widget{
   }
 
   Widget(){
-    if(path == null){
-      throw new Exception("path in Widget must be defined");
-    }
-    template = findInMap(path, templates);
-    var langCache = findInMap(path, lang);
-    if(langCache is Map){
-      widgetLang = langCache;
-    }
+//    if(path == null){
+//      throw new Exception("path in Widget must be defined");
+//    }
+//    template = findInMap(path, templates);
+//    var langCache = findInMap(path, lang);
+//    if(langCache is Map){
+//      widgetLang = langCache;
+//    }
   }
 
   Map out();
@@ -64,5 +64,9 @@ abstract class Widget{
       }
     }
     return null;
+  }
+
+  Element select(String selector){
+    return target.querySelector(selector);
   }
 }

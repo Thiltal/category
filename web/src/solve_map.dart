@@ -85,7 +85,7 @@ class SolveMap {
         ..send(out);
   }
   int _startTime;
-  int _frames = 0;
+//  int _frames = 0;
   void onFrame(double frame) {
     for (OnFrame f in onFrames) {
       f();

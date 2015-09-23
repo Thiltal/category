@@ -29,6 +29,14 @@ packages:
     description: dart_jwt
     source: hosted
     version: "0.1.2"
+  dbcrypt:
+    description: dbcrypt
+    source: hosted
+    version: "0.2.1"
+  drandom:
+    description: drandom
+    source: hosted
+    version: "0.0.3"
   either:
     description: either
     source: hosted
@@ -73,6 +81,10 @@ packages:
     description: mockito
     source: hosted
     version: "0.8.1"
+  mustache_no_mirror:
+    description: mustache_no_mirror
+    source: hosted
+    version: "0.1.8"
   option:
     description: option
     source: hosted
