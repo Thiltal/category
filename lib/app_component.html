@@ -1,3 +1,9 @@
-<h1>My First AngularDart App</h1>
+<header></header>
 
-<todo-list></todo-list>
+<issue-list *ngIf="currentInSolve == null && authService.userLoaded" (selected)="select($event)"></issue-list>
+<add-issue *ngIf="currentInSolve == null && authService.userLoaded"></add-issue>
+<solver *ngIf="currentInSolve != null" [issue]="currentInSolve" (selected)="select($event)"></solver>
+
+<footer class="py-5 bg-dark"></footer>
+
+
